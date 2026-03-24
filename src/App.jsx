@@ -155,6 +155,43 @@ function OccCard({occ,onClick,selected,relevance}){
   </div>);
 }
 
+function OccTable({items,onClick,selectedId}){
+  return(
+    <div style={{background:"#fff",border:`1px solid ${T.border}`,borderRadius:10,overflow:"auto"}}>
+      <table style={{width:"100%",borderCollapse:"collapse",minWidth:760}}>
+        <thead>
+          <tr style={{background:T.cream}}>
+            {["Occupation","Group","AI Risk","Impact","Median Salary","Workers"].map(h=>(
+              <th key={h} style={{textAlign:h==="Occupation"?"left":"right",padding:"11px 12px",fontSize:10,letterSpacing:"0.1em",textTransform:"uppercase",color:T.muted,fontFamily:"'DM Sans',sans-serif",borderBottom:`1px solid ${T.border}`}}>{h}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {items.map(occ=>{
+            const selected=selectedId===occ.id;
+            const band=getRiskBand(occ.risk);
+            return(
+              <tr key={occ.id} onClick={()=>onClick(occ)} style={{cursor:"pointer",background:selected?T.greenLt:"#fff"}}>
+                <td style={{padding:"11px 12px",borderBottom:`1px solid ${T.border}`}}>
+                  <div style={{fontSize:13,fontWeight:600,color:T.ink,fontFamily:"'DM Sans',sans-serif"}}>{occ.title}</div>
+                  <div style={{fontSize:10,color:T.muted,fontFamily:"'DM Sans',sans-serif"}}>MASCO {occ.code}</div>
+                </td>
+                <td style={{padding:"11px 12px",textAlign:"right",fontSize:11,color:T.muted,fontFamily:"'DM Sans',sans-serif",borderBottom:`1px solid ${T.border}`}}>{occ.group}</td>
+                <td style={{padding:"11px 12px",textAlign:"right",borderBottom:`1px solid ${T.border}`}}>
+                  <span style={{fontSize:11,fontWeight:700,color:RISK_PALETTE[band],fontFamily:"'DM Sans',sans-serif"}}>{occ.risk}%</span>
+                </td>
+                <td style={{padding:"11px 12px",textAlign:"right",fontSize:11,color:IMPACT_PALETTE[occ.impact],fontFamily:"'DM Sans',sans-serif",borderBottom:`1px solid ${T.border}`}}>{occ.impact}</td>
+                <td style={{padding:"11px 12px",textAlign:"right",fontSize:12,fontWeight:600,color:T.green,fontFamily:"'DM Sans',sans-serif",borderBottom:`1px solid ${T.border}`}}>{fmtRM(occ.salary)}</td>
+                <td style={{padding:"11px 12px",textAlign:"right",fontSize:11,color:T.muted,fontFamily:"'DM Sans',sans-serif",borderBottom:`1px solid ${T.border}`}}>{occ.workers.toLocaleString()}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 function DetailDrawer({occ,onClose,isMobile}){
   if(!occ)return null;
   const band=getRiskBand(occ.risk),color=RISK_PALETTE[band];
@@ -310,6 +347,7 @@ export default function MalaysiaAIWorkIndex(){
   const [activeState,setActiveState]=useState(null);
   const [mounted,setMounted]=useState(false);
   const [isMobile,setIsMobile]=useState(false);
+  const [viewMode,setViewMode]=useState("table");
 
   useEffect(()=>{setTimeout(()=>setMounted(true),80);},[]);
   useEffect(()=>{
@@ -318,6 +356,7 @@ export default function MalaysiaAIWorkIndex(){
     window.addEventListener("resize",onResize);
     return()=>window.removeEventListener("resize",onResize);
   },[]);
+  const effectiveViewMode=isMobile?"cards":viewMode;
 
   const annotated=useMemo(()=>OCCUPATIONS.map(o=>({...o,relevance:getRelevance(o.id,activeState?.topSectors??null)})),[activeState]);
   const filtered=useMemo(()=>annotated.filter(o=>{const s=search.toLowerCase();return(o.title.toLowerCase().includes(s)||o.group.toLowerCase().includes(s))&&(filterGroup==="All"||o.group===filterGroup)&&(filterBand==="All"||getRiskBand(o.risk)===filterBand)&&(filterImpact==="All"||o.impact===filterImpact);}).sort((a,b)=>{const ord={primary:0,secondary:1,other:2,all:0};const d=ord[a.relevance]-ord[b.relevance];return d!==0?d:b.risk-a.risk;}),[annotated,search,filterGroup,filterBand,filterImpact]);
@@ -341,6 +380,9 @@ export default function MalaysiaAIWorkIndex(){
             <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:16,fontWeight:700,color:T.green,lineHeight:1}}>MY AI Work Index</div>
             <div style={{fontSize:9,color:T.muted,letterSpacing:"0.12em",textTransform:"uppercase"}}>Malaysia · Beta 2026</div>
           </div>
+          {!isMobile&&<div style={{display:"flex",gap:4,marginLeft:12}}>
+            {["Find","Browse","Compare","Methodology"].map(l=><span key={l} style={{fontSize:11,padding:"4px 8px",border:`1px solid ${T.border}`,borderRadius:12,color:T.muted,fontFamily:"'DM Sans',sans-serif"}}>{l}</span>)}
+          </div>}
         </div>
         <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap",justifyContent:"flex-end"}}>
           {activeState&&<div style={{display:"flex",alignItems:"center",gap:6,background:T.greenLt,border:`1px solid ${T.green}33`,borderRadius:20,padding:"4px 12px"}}><span style={{fontSize:10,fontWeight:600,color:T.green,fontFamily:"'DM Sans',sans-serif"}}>{activeState.name}</span><button onClick={()=>setActiveState(null)} style={{background:"none",border:"none",color:T.green,cursor:"pointer",fontSize:11,lineHeight:1}}>✕</button></div>}
@@ -390,11 +432,18 @@ export default function MalaysiaAIWorkIndex(){
             {activeState&&<div style={{display:"flex",gap:16,alignItems:"center",marginBottom:12,fontSize:11,color:T.muted,fontFamily:"'DM Sans',sans-serif",flexWrap:"wrap"}}><span><span style={{color:T.amber,marginRight:4}}>◆ Featured</span>— primary sector match for {activeState.name}</span><span style={{opacity:.5}}>· Dimmed = low relevance to this state</span></div>}
             <div style={{display:"flex",justifyContent:"space-between",marginBottom:12,flexWrap:"wrap",gap:6}}>
               <p style={{fontSize:12,color:T.muted,fontFamily:"'DM Sans',sans-serif"}}><span style={{fontWeight:600,color:T.ink}}>{filtered.length}</span> occupation{filtered.length!==1?"s":""} shown{activeState&&<span style={{color:T.amber,marginLeft:6}}>· {activeState.name}</span>}</p>
-              <p style={{fontSize:11,color:T.muted,fontFamily:"'DM Sans',sans-serif"}}>Click any card for details</p>
+              <div style={{display:"flex",alignItems:"center",gap:8}}>
+                {!isMobile&&<div style={{display:"flex",background:T.cream,border:`1px solid ${T.border}`,borderRadius:99,padding:2}}>
+                  {["table","cards"].map(m=><button key={m} onClick={()=>setViewMode(m)} style={{border:"none",cursor:"pointer",fontSize:11,padding:"4px 9px",borderRadius:99,background:effectiveViewMode===m?T.green:"transparent",color:effectiveViewMode===m?"#fff":T.muted,fontFamily:"'DM Sans',sans-serif",textTransform:"capitalize"}}>{m}</button>)}
+                </div>}
+                <p style={{fontSize:11,color:T.muted,fontFamily:"'DM Sans',sans-serif"}}>Click row/card for details</p>
+              </div>
             </div>
-            <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"repeat(auto-fill,minmax(280px,1fr))",gap:12}}>
-              {filtered.map((o,i)=><div key={o.id} className="ci" style={{animationDelay:`${i*.025}s`}}><OccCard occ={o} onClick={setSelected} selected={selected?.id===o.id} relevance={o.relevance}/></div>)}
-            </div>
+            {(effectiveViewMode==="table"&&!isMobile)
+              ?<OccTable items={filtered} onClick={setSelected} selectedId={selected?.id}/>
+              :<div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"repeat(auto-fill,minmax(280px,1fr))",gap:12}}>
+                {filtered.map((o,i)=><div key={o.id} className="ci" style={{animationDelay:`${i*.025}s`}}><OccCard occ={o} onClick={setSelected} selected={selected?.id===o.id} relevance={o.relevance}/></div>)}
+              </div>}
           </>)}
 
           {tab==="visualise"&&(
