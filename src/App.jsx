@@ -155,14 +155,51 @@ function OccCard({occ,onClick,selected,relevance}){
   </div>);
 }
 
-function DetailDrawer({occ,onClose}){
+function OccTable({items,onClick,selectedId}){
+  return(
+    <div style={{background:"#fff",border:`1px solid ${T.border}`,borderRadius:10,overflow:"auto"}}>
+      <table style={{width:"100%",borderCollapse:"collapse",minWidth:760}}>
+        <thead>
+          <tr style={{background:T.cream}}>
+            {["Occupation","Group","AI Risk","Impact","Median Salary","Workers"].map(h=>(
+              <th key={h} style={{textAlign:h==="Occupation"?"left":"right",padding:"11px 12px",fontSize:10,letterSpacing:"0.1em",textTransform:"uppercase",color:T.muted,fontFamily:"'DM Sans',sans-serif",borderBottom:`1px solid ${T.border}`}}>{h}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {items.map(occ=>{
+            const selected=selectedId===occ.id;
+            const band=getRiskBand(occ.risk);
+            return(
+              <tr key={occ.id} onClick={()=>onClick(occ)} style={{cursor:"pointer",background:selected?T.greenLt:"#fff"}}>
+                <td style={{padding:"11px 12px",borderBottom:`1px solid ${T.border}`}}>
+                  <div style={{fontSize:13,fontWeight:600,color:T.ink,fontFamily:"'DM Sans',sans-serif"}}>{occ.title}</div>
+                  <div style={{fontSize:10,color:T.muted,fontFamily:"'DM Sans',sans-serif"}}>MASCO {occ.code}</div>
+                </td>
+                <td style={{padding:"11px 12px",textAlign:"right",fontSize:11,color:T.muted,fontFamily:"'DM Sans',sans-serif",borderBottom:`1px solid ${T.border}`}}>{occ.group}</td>
+                <td style={{padding:"11px 12px",textAlign:"right",borderBottom:`1px solid ${T.border}`}}>
+                  <span style={{fontSize:11,fontWeight:700,color:RISK_PALETTE[band],fontFamily:"'DM Sans',sans-serif"}}>{occ.risk}%</span>
+                </td>
+                <td style={{padding:"11px 12px",textAlign:"right",fontSize:11,color:IMPACT_PALETTE[occ.impact],fontFamily:"'DM Sans',sans-serif",borderBottom:`1px solid ${T.border}`}}>{occ.impact}</td>
+                <td style={{padding:"11px 12px",textAlign:"right",fontSize:12,fontWeight:600,color:T.green,fontFamily:"'DM Sans',sans-serif",borderBottom:`1px solid ${T.border}`}}>{fmtRM(occ.salary)}</td>
+                <td style={{padding:"11px 12px",textAlign:"right",fontSize:11,color:T.muted,fontFamily:"'DM Sans',sans-serif",borderBottom:`1px solid ${T.border}`}}>{occ.workers.toLocaleString()}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function DetailDrawer({occ,onClose,isMobile}){
   if(!occ)return null;
   const band=getRiskBand(occ.risk),color=RISK_PALETTE[band];
   const rd=[{subject:"AI Exposure",A:occ.risk},{subject:"Salary Resilience",A:Math.min(100,Math.round(occ.salary/180))},{subject:"Labour Demand",A:occ.demand?72:35},{subject:"Human Bottleneck",A:Math.max(5,100-occ.risk-8)},{subject:"MyCOL Priority",A:occ.myscol?85:20}];
   return(<>
-    <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(13,61,43,.25)",zIndex:299,backdropFilter:"blur(2px)"}}/>
-    <div style={{position:"fixed",right:0,top:0,bottom:0,width:390,background:"#fff",borderLeft:`1px solid ${T.border}`,zIndex:300,overflowY:"auto",boxShadow:"-8px 0 32px rgba(13,61,43,.12)",display:"flex",flexDirection:"column"}}>
-      <div style={{background:T.green,padding:"1.25rem 1.5rem",position:"sticky",top:0,zIndex:1}}>
+    <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(13,61,43,.25)",zIndex:299,backdropFilter:"blur(2px)",WebkitBackdropFilter:"blur(2px)"}}/>
+    <div style={{position:"fixed",right:0,top:0,bottom:0,width:isMobile?"100%":390,background:"#fff",borderLeft:isMobile?"none":`1px solid ${T.border}`,zIndex:300,overflowY:"auto",boxShadow:isMobile?"none":"-8px 0 32px rgba(13,61,43,.12)",display:"flex",flexDirection:"column"}}>
+      <div style={{background:T.green,padding:isMobile?"1rem":"1.25rem 1.5rem",position:"sticky",top:0,zIndex:1}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
           <div>
             <p style={{fontSize:9,letterSpacing:"0.14em",color:"rgba(255,255,255,.6)",margin:"0 0 4px",textTransform:"uppercase",fontFamily:"'DM Sans',sans-serif"}}>{occ.group} · MASCO {occ.code}</p>
@@ -171,8 +208,8 @@ function DetailDrawer({occ,onClose}){
           <button onClick={onClose} style={{background:"rgba(255,255,255,.15)",border:"none",color:"#fff",width:32,height:32,borderRadius:"50%",cursor:"pointer",fontSize:14,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
         </div>
       </div>
-      <div style={{padding:"1.5rem",flex:1}}>
-        <div style={{display:"flex",alignItems:"center",gap:20,marginBottom:"1.5rem",padding:"1rem",background:T.cream,borderRadius:8,border:`1px solid ${T.border}`}}>
+      <div style={{padding:isMobile?"1rem":"1.5rem",flex:1}}>
+        <div style={{display:"flex",alignItems:isMobile?"flex-start":"center",flexDirection:isMobile?"column":"row",gap:isMobile?12:20,marginBottom:"1.5rem",padding:"1rem",background:T.cream,borderRadius:8,border:`1px solid ${T.border}`}}>
           <RiskGauge value={occ.risk} size={90}/>
           <div>
             <p style={{fontSize:9,letterSpacing:"0.12em",color:T.muted,textTransform:"uppercase",margin:"0 0 4px",fontFamily:"'DM Sans',sans-serif"}}>AI Pressure Score</p>
@@ -183,7 +220,7 @@ function DetailDrawer({occ,onClose}){
             </div>
           </div>
         </div>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:"1.5rem"}}>
+        <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:10,marginBottom:"1.5rem"}}>
           {[{label:"Median Salary",val:fmtRM(occ.salary)+"/mo",bg:T.greenLt,tc:T.green},{label:"Est. Workers",val:occ.workers>=100000?(occ.workers/1000).toFixed(0)+"K":occ.workers.toLocaleString(),bg:T.amberLt,tc:T.amber}].map(s=>(
             <div key={s.label} style={{background:s.bg,borderRadius:6,padding:"0.85rem"}}>
               <p style={{fontSize:9,letterSpacing:"0.1em",color:T.muted,textTransform:"uppercase",margin:"0 0 4px",fontFamily:"'DM Sans',sans-serif"}}>{s.label}</p>
@@ -210,7 +247,26 @@ function DetailDrawer({occ,onClose}){
   </>);
 }
 
-function StateSidebar({selectedState,onSelect}){
+function StateSidebar({selectedState,onSelect,isMobile}){
+  if(isMobile){
+    return(
+      <section style={{borderBottom:`1px solid ${T.border}`,background:"#fff",padding:"0.85rem 0.9rem"}}>
+        <p style={{fontSize:9,letterSpacing:"0.16em",color:T.muted,textTransform:"uppercase",margin:"0 0 0.55rem",fontFamily:"'DM Sans',sans-serif"}}>Filter by State</p>
+        <select
+          value={selectedState?.id??"all"}
+          onChange={(e)=>onSelect(ALL_STATES.find(st=>st.id===e.target.value)??null)}
+          style={{width:"100%",border:`1.5px solid ${T.border}`,background:T.cream,color:T.ink,padding:"10px 12px",borderRadius:8,fontFamily:"'DM Sans',sans-serif",fontSize:13,outline:"none"}}
+        >
+          <option value="all">🇲🇾 All Malaysia</option>
+          {STATE_REGIONS.map(rg=>(
+            <optgroup key={rg.region} label={rg.region}>
+              {rg.states.map(st=><option key={st.id} value={st.id}>{st.short} · {st.name}</option>)}
+            </optgroup>
+          ))}
+        </select>
+      </section>
+    );
+  }
   return(
     <aside style={{width:T.sideW,flexShrink:0,position:"sticky",top:60,height:"calc(100vh - 60px)",overflowY:"auto",borderRight:`1px solid ${T.border}`,background:"#fff",display:"flex",flexDirection:"column"}}>
       <div style={{padding:"1rem 1.1rem 0.8rem",borderBottom:`1px solid ${T.border}`,background:T.cream}}>
@@ -252,10 +308,10 @@ function StateSidebar({selectedState,onSelect}){
   );
 }
 
-function StateBanner({state,onClear}){
+function StateBanner({state,onClear,isMobile}){
   if(!state)return null;
   return(
-    <div style={{background:T.green,borderRadius:10,padding:"1.25rem 1.5rem",marginBottom:"1.5rem",display:"flex",gap:20,flexWrap:"wrap",alignItems:"flex-start",position:"relative",overflow:"hidden"}}>
+    <div style={{background:T.green,borderRadius:10,padding:isMobile?"1rem":"1.25rem 1.5rem",marginBottom:"1.5rem",display:"flex",gap:20,flexWrap:"wrap",alignItems:"flex-start",position:"relative",overflow:"hidden"}}>
       <svg style={{position:"absolute",right:0,top:0,bottom:0,width:180,opacity:.06}} viewBox="0 0 180 120" preserveAspectRatio="xMidYMid slice">
         {[80,60,40,20].map((r,i)=><circle key={i} cx="180" cy="60" r={r} fill="none" stroke="#fff" strokeWidth="30"/>)}
       </svg>
@@ -267,7 +323,7 @@ function StateBanner({state,onClear}){
           {state.topSectors.map(s=><span key={s} style={{fontSize:10,padding:"3px 10px",borderRadius:20,background:"rgba(255,255,255,.15)",color:"rgba(255,255,255,.85)",border:"1px solid rgba(255,255,255,.2)",fontFamily:"'DM Sans',sans-serif"}}>{s}</span>)}
         </div>
       </div>
-      <div style={{display:"flex",gap:22,flexShrink:0,flexWrap:"wrap"}}>
+      <div style={{display:"flex",gap:isMobile?14:22,flexShrink:0,flexWrap:"wrap"}}>
         {[{label:"State GDP",val:state.gdp},{label:"Median Salary",val:fmtRM(state.medianSalary)+"/mo"},{label:"Unemployment",val:state.unemployment+"%"}].map(s=>(
           <div key={s.label}>
             <div style={{fontSize:9,color:"rgba(255,255,255,.45)",letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:3,fontFamily:"'DM Sans',sans-serif"}}>{s.label}</div>
@@ -281,6 +337,7 @@ function StateBanner({state,onClear}){
 }
 
 export default function MalaysiaAIWorkIndex(){
+  const getIsMobile=()=>typeof window!=="undefined"&&window.matchMedia("(max-width: 1100px)").matches;
   const [tab,setTab]=useState("explore");
   const [search,setSearch]=useState("");
   const [filterGroup,setFilterGroup]=useState("All");
@@ -289,8 +346,17 @@ export default function MalaysiaAIWorkIndex(){
   const [selected,setSelected]=useState(null);
   const [activeState,setActiveState]=useState(null);
   const [mounted,setMounted]=useState(false);
+  const [isMobile,setIsMobile]=useState(getIsMobile);
+  const [viewMode,setViewMode]=useState("table");
 
   useEffect(()=>{setTimeout(()=>setMounted(true),80);},[]);
+  useEffect(()=>{
+    const onResize=()=>setIsMobile(getIsMobile());
+    onResize();
+    window.addEventListener("resize",onResize);
+    return()=>window.removeEventListener("resize",onResize);
+  },[]);
+  const effectiveViewMode=isMobile?"cards":viewMode;
 
   const annotated=useMemo(()=>OCCUPATIONS.map(o=>({...o,relevance:getRelevance(o.id,activeState?.topSectors??null)})),[activeState]);
   const filtered=useMemo(()=>annotated.filter(o=>{const s=search.toLowerCase();return(o.title.toLowerCase().includes(s)||o.group.toLowerCase().includes(s))&&(filterGroup==="All"||o.group===filterGroup)&&(filterBand==="All"||getRiskBand(o.risk)===filterBand)&&(filterImpact==="All"||o.impact===filterImpact);}).sort((a,b)=>{const ord={primary:0,secondary:1,other:2,all:0};const d=ord[a.relevance]-ord[b.relevance];return d!==0?d:b.risk-a.risk;}),[annotated,search,filterGroup,filterBand,filterImpact]);
@@ -301,30 +367,33 @@ export default function MalaysiaAIWorkIndex(){
   const topSafe=[...OCCUPATIONS].sort((a,b)=>a.risk-b.risk).slice(0,5);
   const topDemand=OCCUPATIONS.filter(o=>o.demand).sort((a,b)=>b.salary-a.salary).slice(0,5);
 
-  const css=`@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600&display=swap');*{box-sizing:border-box;margin:0;padding:0;}body{background:${T.cream};}::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:${T.paper};}::-webkit-scrollbar-thumb{background:${T.green}44;border-radius:3px;}input::placeholder{color:${T.muted};}@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}.ci{animation:fadeUp .38s ease both;}`;
+  const css=`@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600&display=swap');*{box-sizing:border-box;margin:0;padding:0;scrollbar-width:thin;scrollbar-color:${T.green}44 ${T.paper};}body{background:${T.cream};}::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:${T.paper};}::-webkit-scrollbar-thumb{background:${T.green}44;border-radius:3px;}input::placeholder{color:${T.muted};}@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}@keyframes orbit{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}@keyframes floatSlow{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}@keyframes pulseGlow{0%,100%{box-shadow:0 0 0 rgba(255,255,255,0)}50%{box-shadow:0 0 24px rgba(255,255,255,.1)}}.ci{animation:fadeUp .38s ease both;}.heroOrb{transform-origin:100% 50%;animation:orbit 30s linear infinite;}.heroCard{animation:fadeUp .5s ease both;}.statTile{animation:floatSlow 5s ease-in-out infinite,pulseGlow 4s ease-in-out infinite;}@media (prefers-reduced-motion:reduce){.ci,.heroOrb,.heroCard,.statTile{animation:none !important;}}`;
 
   return(
-    <div style={{fontFamily:"'DM Sans',sans-serif",background:T.cream,minHeight:"100vh"}}>
+    <div style={{fontFamily:"'DM Sans',sans-serif",background:T.cream,minHeight:"100vh",width:"100%",overflowX:"hidden"}}>
       <style>{css}</style>
 
-      <header style={{position:"sticky",top:0,zIndex:150,background:"rgba(250,246,239,.94)",backdropFilter:"blur(12px)",borderBottom:`1px solid ${T.border}`,padding:"0 1.5rem",display:"flex",alignItems:"center",justifyContent:"space-between",height:60}}>
+      <header style={{position:"sticky",top:0,zIndex:150,background:"rgba(250,246,239,.94)",backdropFilter:"blur(12px)",WebkitBackdropFilter:"blur(12px)",borderBottom:`1px solid ${T.border}`,padding:isMobile?"0 0.8rem":"0 1.5rem",display:"flex",alignItems:"center",justifyContent:"space-between",height:isMobile?70:60,gap:10}}>
         <div style={{display:"flex",alignItems:"center",gap:10}}>
           <div style={{width:30,height:30,borderRadius:"50%",background:T.green,display:"flex",alignItems:"center",justifyContent:"center"}}><span style={{color:T.amber,fontSize:13}}>☽</span></div>
           <div>
             <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:16,fontWeight:700,color:T.green,lineHeight:1}}>MY AI Work Index</div>
             <div style={{fontSize:9,color:T.muted,letterSpacing:"0.12em",textTransform:"uppercase"}}>Malaysia · Beta 2026</div>
           </div>
+          {!isMobile&&<div style={{display:"flex",gap:4,marginLeft:12}}>
+            {["Find","Browse","Compare","Methodology"].map(l=><span key={l} style={{fontSize:11,padding:"4px 8px",border:`1px solid ${T.border}`,borderRadius:12,color:T.muted,fontFamily:"'DM Sans',sans-serif"}}>{l}</span>)}
+          </div>}
         </div>
-        <div style={{display:"flex",alignItems:"center",gap:10}}>
+        <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap",justifyContent:"flex-end"}}>
           {activeState&&<div style={{display:"flex",alignItems:"center",gap:6,background:T.greenLt,border:`1px solid ${T.green}33`,borderRadius:20,padding:"4px 12px"}}><span style={{fontSize:10,fontWeight:600,color:T.green,fontFamily:"'DM Sans',sans-serif"}}>{activeState.name}</span><button onClick={()=>setActiveState(null)} style={{background:"none",border:"none",color:T.green,cursor:"pointer",fontSize:11,lineHeight:1}}>✕</button></div>}
-          <nav style={{display:"flex",gap:3}}>
-            {["explore","visualise","rankings"].map(t=><button key={t} onClick={()=>setTab(t)} style={{background:tab===t?T.green:"transparent",color:tab===t?"#fff":T.muted,border:"none",cursor:"pointer",padding:"6px 14px",borderRadius:20,fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:500,textTransform:"capitalize",transition:"all .14s"}}>{t}</button>)}
+          <nav style={{display:"flex",gap:3,overflowX:isMobile?"auto":"visible",maxWidth:isMobile?"62vw":"none"}}>
+            {["explore","visualise","rankings"].map(t=><button key={t} onClick={()=>setTab(t)} style={{background:tab===t?T.green:"transparent",color:tab===t?"#fff":T.muted,border:"none",cursor:"pointer",padding:isMobile?"6px 10px":"6px 14px",borderRadius:20,fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:500,textTransform:"capitalize",transition:"all .14s",whiteSpace:"nowrap"}}>{t}</button>)}
           </nav>
         </div>
       </header>
 
-      <div style={{background:T.green,padding:"3.5rem 2rem 2.5rem",position:"relative",overflow:"hidden"}}>
-        <svg style={{position:"absolute",right:0,top:0,bottom:0,width:"38%",opacity:.05}} viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">{[180,150,120,90,60].map((r,i)=><circle key={i} cx="400" cy="150" r={r} fill="none" stroke="#fff" strokeWidth="40"/>)}</svg>
+      <div style={{background:T.green,padding:isMobile?"2rem 1rem 1.5rem":"3.5rem 2rem 2.5rem",position:"relative",overflow:"hidden"}}>
+        <svg className="heroOrb" style={{position:"absolute",right:0,top:0,bottom:0,width:"38%",opacity:.05}} viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">{[180,150,120,90,60].map((r,i)=><circle key={i} cx="400" cy="150" r={r} fill="none" stroke="#fff" strokeWidth="40"/>)}</svg>
         <div style={{position:"absolute",bottom:0,left:0,right:0,height:5,background:`repeating-linear-gradient(90deg,${T.red} 0,${T.red} 48%,transparent 48%,transparent 52%,${T.amber} 52%,${T.amber} 100%)`}}/>
         <div style={{maxWidth:820,opacity:mounted?1:0,transform:mounted?"none":"translateY(18px)",transition:"all .55s ease"}}>
           <p style={{fontSize:10,letterSpacing:"0.22em",color:"rgba(255,255,255,.5)",textTransform:"uppercase",marginBottom:14}}>DOSM MASCO 2020 · TalentCorp MyCOL 2024/25 · Structural AI Scores</p>
@@ -332,7 +401,7 @@ export default function MalaysiaAIWorkIndex(){
           <p style={{fontSize:12,color:"rgba(255,255,255,.6)",maxWidth:460,lineHeight:1.75,marginBottom:"2rem"}}>Explore AI displacement pressure across 48 Malaysian occupations. Select any state on the left to see which roles face the most pressure in that economy.</p>
           <div style={{display:"flex",gap:0,flexWrap:"wrap",borderTop:"1px solid rgba(255,255,255,.14)",paddingTop:"1.4rem"}}>
             {[{val:"620K",label:"Jobs at high displacement risk",note:"TalentCorp 2024"},{val:"RM 4,300",label:"Median monthly salary at AI overlap",note:"DOSM LFS Q4 2024"},{val:"16",label:"States & territories covered",note:"All Malaysia"},{val:"15%",label:"High-risk automation by 2030",note:"World Bank"}].map((s,i)=>(
-              <div key={s.val} style={{paddingRight:"2rem",marginRight:"2rem",borderRight:i<3?"1px solid rgba(255,255,255,.12)":"none",marginBottom:"0.5rem"}}>
+              <div key={s.val} className="heroCard statTile" style={{animationDelay:`${i*0.12}s`,paddingRight:isMobile?"0.5rem":"2rem",marginRight:isMobile?"0.5rem":"2rem",borderRight:!isMobile&&i<3?"1px solid rgba(255,255,255,.12)":"none",marginBottom:"0.75rem",width:isMobile?"50%":"auto"}}>
                 <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:28,fontWeight:700,color:"#fff",lineHeight:1}}>{s.val}</div>
                 <div style={{fontSize:10,color:"rgba(255,255,255,.5)",marginTop:4,maxWidth:130,lineHeight:1.5}}>{s.label}</div>
                 <div style={{fontSize:9,color:T.amber,marginTop:3,opacity:.7}}>{s.note}</div>
@@ -342,10 +411,10 @@ export default function MalaysiaAIWorkIndex(){
         </div>
       </div>
 
-      <div style={{display:"flex"}}>
-        <StateSidebar selectedState={activeState} onSelect={setActiveState}/>
-        <main style={{flex:1,padding:"1.75rem 1.75rem 4rem",minWidth:0}}>
-          <StateBanner state={activeState} onClear={()=>setActiveState(null)}/>
+      <div style={{display:"flex",flexDirection:isMobile?"column":"row"}}>
+        <StateSidebar selectedState={activeState} onSelect={setActiveState} isMobile={isMobile}/>
+        <main style={{flex:1,padding:isMobile?"1rem 0.8rem 2rem":"1.75rem 1.75rem 4rem",minWidth:0}}>
+          <StateBanner state={activeState} onClear={()=>setActiveState(null)} isMobile={isMobile}/>
 
           {tab==="explore"&&(<>
             <div style={{background:"#fff",border:`1px solid ${T.border}`,borderRadius:10,padding:"1rem 1.25rem",marginBottom:"1.25rem",display:"flex",gap:12,flexWrap:"wrap",alignItems:"flex-end",boxShadow:"0 2px 10px rgba(13,61,43,.05)"}}>
@@ -360,19 +429,26 @@ export default function MalaysiaAIWorkIndex(){
                 </div>
               ))}
             </div>
-            {activeState&&<div style={{display:"flex",gap:16,alignItems:"center",marginBottom:12,fontSize:11,color:T.muted,fontFamily:"'DM Sans',sans-serif"}}><span><span style={{color:T.amber,marginRight:4}}>◆ Featured</span>— primary sector match for {activeState.name}</span><span style={{opacity:.5}}>· Dimmed = low relevance to this state</span></div>}
-            <div style={{display:"flex",justifyContent:"space-between",marginBottom:12}}>
+            {activeState&&<div style={{display:"flex",gap:16,alignItems:"center",marginBottom:12,fontSize:11,color:T.muted,fontFamily:"'DM Sans',sans-serif",flexWrap:"wrap"}}><span><span style={{color:T.amber,marginRight:4}}>◆ Featured</span>— primary sector match for {activeState.name}</span><span style={{opacity:.5}}>· Dimmed = low relevance to this state</span></div>}
+            <div style={{display:"flex",justifyContent:"space-between",marginBottom:12,flexWrap:"wrap",gap:6}}>
               <p style={{fontSize:12,color:T.muted,fontFamily:"'DM Sans',sans-serif"}}><span style={{fontWeight:600,color:T.ink}}>{filtered.length}</span> occupation{filtered.length!==1?"s":""} shown{activeState&&<span style={{color:T.amber,marginLeft:6}}>· {activeState.name}</span>}</p>
-              <p style={{fontSize:11,color:T.muted,fontFamily:"'DM Sans',sans-serif"}}>Click any card for details</p>
+              <div style={{display:"flex",alignItems:"center",gap:8}}>
+                {!isMobile&&<div style={{display:"flex",background:T.cream,border:`1px solid ${T.border}`,borderRadius:99,padding:2}}>
+                  {["table","cards"].map(m=><button key={m} onClick={()=>setViewMode(m)} style={{border:"none",cursor:"pointer",fontSize:11,padding:"4px 9px",borderRadius:99,background:effectiveViewMode===m?T.green:"transparent",color:effectiveViewMode===m?"#fff":T.muted,fontFamily:"'DM Sans',sans-serif",textTransform:"capitalize"}}>{m}</button>)}
+                </div>}
+                <p style={{fontSize:11,color:T.muted,fontFamily:"'DM Sans',sans-serif"}}>Click row/card for details</p>
+              </div>
             </div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:12}}>
-              {filtered.map((o,i)=><div key={o.id} className="ci" style={{animationDelay:`${i*.025}s`}}><OccCard occ={o} onClick={setSelected} selected={selected?.id===o.id} relevance={o.relevance}/></div>)}
-            </div>
+            {(effectiveViewMode==="table"&&!isMobile)
+              ?<OccTable items={filtered} onClick={setSelected} selectedId={selected?.id}/>
+              :<div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"repeat(auto-fill,minmax(280px,1fr))",gap:12}}>
+                {filtered.map((o,i)=><div key={o.id} className="ci" style={{animationDelay:`${i*.025}s`}}><OccCard occ={o} onClick={setSelected} selected={selected?.id===o.id} relevance={o.relevance}/></div>)}
+              </div>}
           </>)}
 
           {tab==="visualise"&&(
             <div style={{display:"flex",flexDirection:"column",gap:"1.5rem"}}>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"1.5rem"}}>
+              <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:"1.5rem"}}>
                 <div style={{background:"#fff",border:`1px solid ${T.border}`,borderRadius:10,padding:"1.5rem"}}>
                   <p style={{fontSize:9,letterSpacing:"0.15em",color:T.muted,textTransform:"uppercase",marginBottom:16,fontFamily:"'DM Sans',sans-serif"}}>Risk Band Distribution</p>
                   <ResponsiveContainer width="100%" height={200}><BarChart data={bandData} margin={{top:0,right:0,bottom:0,left:-20}}><CartesianGrid strokeDasharray="3 3" stroke={T.border} vertical={false}/><XAxis dataKey="band" tick={{fill:T.muted,fontSize:10,fontFamily:"'DM Sans',sans-serif"}} axisLine={false} tickLine={false}/><YAxis tick={{fill:T.muted,fontSize:10}} axisLine={false} tickLine={false}/><Tooltip contentStyle={{background:"#fff",border:`1px solid ${T.border}`,borderRadius:6,fontFamily:"'DM Sans',sans-serif",fontSize:12}}/><Bar dataKey="count" radius={[4,4,0,0]}>{bandData.map(e=><Cell key={e.band} fill={RISK_PALETTE[e.band]}/>)}</Bar></BarChart></ResponsiveContainer>
@@ -386,7 +462,7 @@ export default function MalaysiaAIWorkIndex(){
               </div>
               <div style={{background:"#fff",border:`1px solid ${T.border}`,borderRadius:10,padding:"1.5rem"}}>
                 <p style={{fontSize:9,letterSpacing:"0.15em",color:T.muted,textTransform:"uppercase",marginBottom:16,fontFamily:"'DM Sans',sans-serif"}}>Average AI Risk by Occupation Group</p>
-                <ResponsiveContainer width="100%" height={240}><BarChart layout="vertical" data={groupData} margin={{top:0,right:50,bottom:0,left:170}}><CartesianGrid strokeDasharray="3 3" stroke={T.border} horizontal={false}/><XAxis type="number" domain={[0,100]} tick={{fill:T.muted,fontSize:10}} axisLine={false} tickLine={false}/><YAxis type="category" dataKey="group" tick={{fill:T.ink,fontSize:11,fontFamily:"'DM Sans',sans-serif"}} axisLine={false} tickLine={false} width={165}/><Tooltip contentStyle={{background:"#fff",border:`1px solid ${T.border}`,borderRadius:6,fontFamily:"'DM Sans',sans-serif",fontSize:12}} formatter={v=>[`${v}%`,"Avg Risk"]}/><Bar dataKey="avg" radius={[0,4,4,0]} label={{position:"right",fill:T.muted,fontSize:11,fontFamily:"'DM Sans',sans-serif"}}>{groupData.map(e=><Cell key={e.group} fill={e.avg>=65?T.red:e.avg>=45?"#c05a1a":e.avg>=30?T.amber:T.greenMid}/>)}</Bar></BarChart></ResponsiveContainer>
+                <ResponsiveContainer width="100%" height={isMobile?380:240}><BarChart layout="vertical" data={groupData} margin={{top:0,right:isMobile?20:50,bottom:0,left:isMobile?120:170}}><CartesianGrid strokeDasharray="3 3" stroke={T.border} horizontal={false}/><XAxis type="number" domain={[0,100]} tick={{fill:T.muted,fontSize:10}} axisLine={false} tickLine={false}/><YAxis type="category" dataKey="group" tick={{fill:T.ink,fontSize:11,fontFamily:"'DM Sans',sans-serif"}} axisLine={false} tickLine={false} width={isMobile?118:165}/><Tooltip contentStyle={{background:"#fff",border:`1px solid ${T.border}`,borderRadius:6,fontFamily:"'DM Sans',sans-serif",fontSize:12}} formatter={v=>[`${v}%`,"Avg Risk"]}/><Bar dataKey="avg" radius={[0,4,4,0]} label={{position:"right",fill:T.muted,fontSize:11,fontFamily:"'DM Sans',sans-serif"}}>{groupData.map(e=><Cell key={e.group} fill={e.avg>=65?T.red:e.avg>=45?"#c05a1a":e.avg>=30?T.amber:T.greenMid}/>)}</Bar></BarChart></ResponsiveContainer>
               </div>
               <div style={{background:T.green,borderRadius:10,padding:"1.5rem"}}>
                 <p style={{fontSize:9,letterSpacing:"0.15em",color:"rgba(255,255,255,.5)",textTransform:"uppercase",marginBottom:14,fontFamily:"'DM Sans',sans-serif"}}>State Median Salary — click to explore</p>
@@ -429,7 +505,7 @@ export default function MalaysiaAIWorkIndex(){
         </div>
       </footer>
 
-      {selected&&<DetailDrawer occ={selected} onClose={()=>setSelected(null)}/>}
+      {selected&&<DetailDrawer occ={selected} onClose={()=>setSelected(null)} isMobile={isMobile}/>}
     </div>
   );
 }
