@@ -7,6 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
+    "check:merge-conflicts": "if rg -n \"^(<<<<<<<|=======|>>>>>>>)\" src README.md index.html package.json public; then echo 'Merge conflict markers found'; exit 1; else echo 'No merge conflict markers found'; fi",
+    "check:forbidden-tabs": "if rg -n \"Find|Browse|Compare|Methodology\" src/App.jsx; then echo 'Forbidden legacy tabs found'; exit 1; else echo 'No forbidden legacy tabs in App.jsx'; fi",
     "preview": "vite preview"
   },
   "dependencies": {
