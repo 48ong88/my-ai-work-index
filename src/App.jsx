@@ -367,7 +367,7 @@ export default function MalaysiaAIWorkIndex(){
   const topSafe=[...OCCUPATIONS].sort((a,b)=>a.risk-b.risk).slice(0,5);
   const topDemand=OCCUPATIONS.filter(o=>o.demand).sort((a,b)=>b.salary-a.salary).slice(0,5);
 
-  const css=`@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600&display=swap');*{box-sizing:border-box;margin:0;padding:0;scrollbar-width:thin;scrollbar-color:${T.green}44 ${T.paper};}body{background:${T.cream};}::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:${T.paper};}::-webkit-scrollbar-thumb{background:${T.green}44;border-radius:3px;}input::placeholder{color:${T.muted};}@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}.ci{animation:fadeUp .38s ease both;}`;
+  const css=`@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600&display=swap');*{box-sizing:border-box;margin:0;padding:0;scrollbar-width:thin;scrollbar-color:${T.green}44 ${T.paper};}body{background:${T.cream};}::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:${T.paper};}::-webkit-scrollbar-thumb{background:${T.green}44;border-radius:3px;}input::placeholder{color:${T.muted};}@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}@keyframes orbit{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}@keyframes floatSlow{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}@keyframes pulseGlow{0%,100%{box-shadow:0 0 0 rgba(255,255,255,0)}50%{box-shadow:0 0 24px rgba(255,255,255,.1)}}.ci{animation:fadeUp .38s ease both;}.heroOrb{transform-origin:100% 50%;animation:orbit 30s linear infinite;}.heroCard{animation:fadeUp .5s ease both;}.statTile{animation:floatSlow 5s ease-in-out infinite,pulseGlow 4s ease-in-out infinite;}@media (prefers-reduced-motion:reduce){.ci,.heroOrb,.heroCard,.statTile{animation:none !important;}}`;
 
   return(
     <div style={{fontFamily:"'DM Sans',sans-serif",background:T.cream,minHeight:"100vh",width:"100%",overflowX:"hidden"}}>
@@ -393,7 +393,7 @@ export default function MalaysiaAIWorkIndex(){
       </header>
 
       <div style={{background:T.green,padding:isMobile?"2rem 1rem 1.5rem":"3.5rem 2rem 2.5rem",position:"relative",overflow:"hidden"}}>
-        <svg style={{position:"absolute",right:0,top:0,bottom:0,width:"38%",opacity:.05}} viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">{[180,150,120,90,60].map((r,i)=><circle key={i} cx="400" cy="150" r={r} fill="none" stroke="#fff" strokeWidth="40"/>)}</svg>
+        <svg className="heroOrb" style={{position:"absolute",right:0,top:0,bottom:0,width:"38%",opacity:.05}} viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">{[180,150,120,90,60].map((r,i)=><circle key={i} cx="400" cy="150" r={r} fill="none" stroke="#fff" strokeWidth="40"/>)}</svg>
         <div style={{position:"absolute",bottom:0,left:0,right:0,height:5,background:`repeating-linear-gradient(90deg,${T.red} 0,${T.red} 48%,transparent 48%,transparent 52%,${T.amber} 52%,${T.amber} 100%)`}}/>
         <div style={{maxWidth:820,opacity:mounted?1:0,transform:mounted?"none":"translateY(18px)",transition:"all .55s ease"}}>
           <p style={{fontSize:10,letterSpacing:"0.22em",color:"rgba(255,255,255,.5)",textTransform:"uppercase",marginBottom:14}}>DOSM MASCO 2020 · TalentCorp MyCOL 2024/25 · Structural AI Scores</p>
@@ -401,7 +401,7 @@ export default function MalaysiaAIWorkIndex(){
           <p style={{fontSize:12,color:"rgba(255,255,255,.6)",maxWidth:460,lineHeight:1.75,marginBottom:"2rem"}}>Explore AI displacement pressure across 48 Malaysian occupations. Select any state on the left to see which roles face the most pressure in that economy.</p>
           <div style={{display:"flex",gap:0,flexWrap:"wrap",borderTop:"1px solid rgba(255,255,255,.14)",paddingTop:"1.4rem"}}>
             {[{val:"620K",label:"Jobs at high displacement risk",note:"TalentCorp 2024"},{val:"RM 4,300",label:"Median monthly salary at AI overlap",note:"DOSM LFS Q4 2024"},{val:"16",label:"States & territories covered",note:"All Malaysia"},{val:"15%",label:"High-risk automation by 2030",note:"World Bank"}].map((s,i)=>(
-              <div key={s.val} style={{paddingRight:isMobile?"0.5rem":"2rem",marginRight:isMobile?"0.5rem":"2rem",borderRight:!isMobile&&i<3?"1px solid rgba(255,255,255,.12)":"none",marginBottom:"0.75rem",width:isMobile?"50%":"auto"}}>
+              <div key={s.val} className="heroCard statTile" style={{animationDelay:`${i*0.12}s`,paddingRight:isMobile?"0.5rem":"2rem",marginRight:isMobile?"0.5rem":"2rem",borderRight:!isMobile&&i<3?"1px solid rgba(255,255,255,.12)":"none",marginBottom:"0.75rem",width:isMobile?"50%":"auto"}}>
                 <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:28,fontWeight:700,color:"#fff",lineHeight:1}}>{s.val}</div>
                 <div style={{fontSize:10,color:"rgba(255,255,255,.5)",marginTop:4,maxWidth:130,lineHeight:1.5}}>{s.label}</div>
                 <div style={{fontSize:9,color:T.amber,marginTop:3,opacity:.7}}>{s.note}</div>
