@@ -77,3 +77,14 @@ Create `.env` (optional):
 ```bash
 VITE_DATA_URL=https://your-api-or-cdn/live-data.json
 ```
+
+## Cloudflare deploy (Wrangler)
+
+This repo includes `wrangler.jsonc` configured to upload static assets from `dist/`.
+
+Build + deploy:
+
+```bash
+npm run build
+npx wrangler versions upload
+```
