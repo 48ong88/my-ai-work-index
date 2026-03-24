@@ -7,8 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "npm run build && wrangler dev",
-    "deploy": "npm run build && wrangler deploy"
+    "check:merge-conflicts": "if rg -n \"^(<<<<<<<|=======|>>>>>>>)\" src README.md index.html package.json public; then echo 'Merge conflict markers found'; exit 1; else echo 'No merge conflict markers found'; fi",
+    "preview": "vite preview"
   },
   "dependencies": {
     "react": "^19.2.4",

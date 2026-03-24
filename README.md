@@ -1,16 +1,90 @@
-# React + Vite
+# MY AI Work Index (Malaysia)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Interactive React dashboard to explore AI exposure risk across Malaysian occupations.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Explore occupations with **cards or table view**
+- Visual analytics: risk bands, group averages, impact mix, risk-vs-salary scatter
+- Rankings for highest risk, most resilient, and in-demand roles
+- Mobile-friendly layout and slide-in detail drawer
+- **Real-time data pulling with fallback** (polls every 60 seconds)
 
-## React Compiler
+## Real-time data pulling
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+The app now attempts to fetch live data every 60s from:
 
-## Expanding the ESLint configuration
+- `VITE_DATA_URL` (if provided), otherwise
+- `/live-data.json`
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Expected payload shape:
+
+```json
+{
+  "occupations": [
+    {
+      "id": 1,
+      "code": "4110",
+      "title": "General Office Clerk",
+      "group": "Clerical Support",
+      "risk": 78,
+      "salary": 2100,
+      "impact": "At Risk",
+      "demand": false,
+      "myscol": false,
+      "workers": 280000
+    }
+  ],
+  "stateRegions": [
+    {
+      "region": "Peninsular Malaysia",
+      "states": [
+        {
+          "id": "johor",
+          "name": "Johor",
+          "short": "JHR",
+          "gdp": "RM 180B",
+          "topSectors": ["Manufacturing"],
+          "medianSalary": 2800,
+          "unemployment": 3.1,
+          "highlight": "..."
+        }
+      ]
+    }
+  ]
+}
+```
+
+If live fetch fails, the UI automatically falls back to bundled local data and shows **Local fallback** status.
+
+## Font
+
+The interface uses **Inter** as the main UI font.
+
+## Development
+
+```bash
+npm install
+npm run dev
+npm run lint
+npm run build
+```
+
+## Environment
+
+Create `.env` (optional):
+
+```bash
+VITE_DATA_URL=https://your-api-or-cdn/live-data.json
+```
+
+## Cloudflare deploy (Wrangler)
+
+This repo includes `wrangler.jsonc` configured to upload static assets from `dist/`.
+
+Build + deploy:
+
+```bash
+npm run build
+npx wrangler versions upload
+```
