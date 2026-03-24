@@ -2,9 +2,6 @@
 
 Interactive React dashboard to explore AI exposure risk across Malaysian occupations.
 
-> 👋 Personal note: I'm still a beginner and I built this project for fun while learning.  
-> I'm continuously improving it as I learn more.
-
 ## Features
 
 - Explore occupations with **cards or table view**
@@ -84,7 +81,6 @@ VITE_DATA_URL=https://your-api-or-cdn/live-data.json
 ## Cloudflare deploy (Wrangler)
 
 This repo includes `wrangler.jsonc` configured to upload static assets from `dist/`.
-Current worker name is set to `index`.
 
 Build + deploy:
 
