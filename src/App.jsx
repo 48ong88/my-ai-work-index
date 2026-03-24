@@ -252,19 +252,18 @@ function StateSidebar({selectedState,onSelect,isMobile}){
     return(
       <section style={{borderBottom:`1px solid ${T.border}`,background:"#fff",padding:"0.85rem 0.9rem"}}>
         <p style={{fontSize:9,letterSpacing:"0.16em",color:T.muted,textTransform:"uppercase",margin:"0 0 0.55rem",fontFamily:"'DM Sans',sans-serif"}}>Filter by State</p>
-        <div style={{display:"flex",gap:6,overflowX:"auto",paddingBottom:4}}>
-          <button onClick={()=>onSelect(null)} style={{whiteSpace:"nowrap",border:"none",cursor:"pointer",padding:"8px 10px",borderRadius:18,fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:600,background:!selectedState?T.green:T.cream,color:!selectedState?"#fff":T.ink}}>
-            🇲🇾 All Malaysia
-          </button>
-          {ALL_STATES.map(st=>{
-            const active=selectedState?.id===st.id;
-            return(
-              <button key={st.id} onClick={()=>onSelect(st)} style={{whiteSpace:"nowrap",border:"none",cursor:"pointer",padding:"8px 10px",borderRadius:18,fontFamily:"'DM Sans',sans-serif",fontSize:12,background:active?T.greenLt:T.cream,color:active?T.green:T.ink,fontWeight:active?600:500}}>
-                {st.short} · {st.name}
-              </button>
-            );
-          })}
-        </div>
+        <select
+          value={selectedState?.id??"all"}
+          onChange={(e)=>onSelect(ALL_STATES.find(st=>st.id===e.target.value)??null)}
+          style={{width:"100%",border:`1.5px solid ${T.border}`,background:T.cream,color:T.ink,padding:"10px 12px",borderRadius:8,fontFamily:"'DM Sans',sans-serif",fontSize:13,outline:"none"}}
+        >
+          <option value="all">🇲🇾 All Malaysia</option>
+          {STATE_REGIONS.map(rg=>(
+            <optgroup key={rg.region} label={rg.region}>
+              {rg.states.map(st=><option key={st.id} value={st.id}>{st.short} · {st.name}</option>)}
+            </optgroup>
+          ))}
+        </select>
       </section>
     );
   }
@@ -338,6 +337,7 @@ function StateBanner({state,onClear,isMobile}){
 }
 
 export default function MalaysiaAIWorkIndex(){
+  const getIsMobile=()=>typeof window!=="undefined"&&window.matchMedia("(max-width: 1100px)").matches;
   const [tab,setTab]=useState("explore");
   const [search,setSearch]=useState("");
   const [filterGroup,setFilterGroup]=useState("All");
@@ -346,12 +346,12 @@ export default function MalaysiaAIWorkIndex(){
   const [selected,setSelected]=useState(null);
   const [activeState,setActiveState]=useState(null);
   const [mounted,setMounted]=useState(false);
-  const [isMobile,setIsMobile]=useState(false);
+  const [isMobile,setIsMobile]=useState(getIsMobile);
   const [viewMode,setViewMode]=useState("table");
 
   useEffect(()=>{setTimeout(()=>setMounted(true),80);},[]);
   useEffect(()=>{
-    const onResize=()=>setIsMobile(window.innerWidth<980);
+    const onResize=()=>setIsMobile(getIsMobile());
     onResize();
     window.addEventListener("resize",onResize);
     return()=>window.removeEventListener("resize",onResize);
@@ -370,7 +370,7 @@ export default function MalaysiaAIWorkIndex(){
   const css=`@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600&display=swap');*{box-sizing:border-box;margin:0;padding:0;scrollbar-width:thin;scrollbar-color:${T.green}44 ${T.paper};}body{background:${T.cream};}::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:${T.paper};}::-webkit-scrollbar-thumb{background:${T.green}44;border-radius:3px;}input::placeholder{color:${T.muted};}@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}.ci{animation:fadeUp .38s ease both;}`;
 
   return(
-    <div style={{fontFamily:"'DM Sans',sans-serif",background:T.cream,minHeight:"100vh"}}>
+    <div style={{fontFamily:"'DM Sans',sans-serif",background:T.cream,minHeight:"100vh",width:"100%",overflowX:"hidden"}}>
       <style>{css}</style>
 
       <header style={{position:"sticky",top:0,zIndex:150,background:"rgba(250,246,239,.94)",backdropFilter:"blur(12px)",WebkitBackdropFilter:"blur(12px)",borderBottom:`1px solid ${T.border}`,padding:isMobile?"0 0.8rem":"0 1.5rem",display:"flex",alignItems:"center",justifyContent:"space-between",height:isMobile?70:60,gap:10}}>
@@ -401,7 +401,7 @@ export default function MalaysiaAIWorkIndex(){
           <p style={{fontSize:12,color:"rgba(255,255,255,.6)",maxWidth:460,lineHeight:1.75,marginBottom:"2rem"}}>Explore AI displacement pressure across 48 Malaysian occupations. Select any state on the left to see which roles face the most pressure in that economy.</p>
           <div style={{display:"flex",gap:0,flexWrap:"wrap",borderTop:"1px solid rgba(255,255,255,.14)",paddingTop:"1.4rem"}}>
             {[{val:"620K",label:"Jobs at high displacement risk",note:"TalentCorp 2024"},{val:"RM 4,300",label:"Median monthly salary at AI overlap",note:"DOSM LFS Q4 2024"},{val:"16",label:"States & territories covered",note:"All Malaysia"},{val:"15%",label:"High-risk automation by 2030",note:"World Bank"}].map((s,i)=>(
-              <div key={s.val} style={{paddingRight:isMobile?"0.9rem":"2rem",marginRight:isMobile?"0.9rem":"2rem",borderRight:i<3?"1px solid rgba(255,255,255,.12)":"none",marginBottom:"0.5rem"}}>
+              <div key={s.val} style={{paddingRight:isMobile?"0.5rem":"2rem",marginRight:isMobile?"0.5rem":"2rem",borderRight:!isMobile&&i<3?"1px solid rgba(255,255,255,.12)":"none",marginBottom:"0.75rem",width:isMobile?"50%":"auto"}}>
                 <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:28,fontWeight:700,color:"#fff",lineHeight:1}}>{s.val}</div>
                 <div style={{fontSize:10,color:"rgba(255,255,255,.5)",marginTop:4,maxWidth:130,lineHeight:1.5}}>{s.label}</div>
                 <div style={{fontSize:9,color:T.amber,marginTop:3,opacity:.7}}>{s.note}</div>

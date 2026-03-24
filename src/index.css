@@ -64,6 +64,7 @@ body,
 
 body {
   background: var(--bg);
+  overflow-x: hidden;
 }
 
 h1,
