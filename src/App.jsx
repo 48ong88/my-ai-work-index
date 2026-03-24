@@ -204,7 +204,7 @@ function DetailDrawer({occ,onClose,isMobile}){
             <p style={{fontSize:9,letterSpacing:"0.14em",color:"rgba(255,255,255,.6)",margin:"0 0 4px",textTransform:"uppercase",fontFamily:"'Inter',sans-serif"}}>{occ.group} · MASCO {occ.code}</p>
             <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:22,color:"#fff",margin:0,lineHeight:1.2}}>{occ.title}</h2>
           </div>
-          <button onClick={onClose} style={{background:"rgba(255,255,255,.15)",border:"none",color:"#fff",width:32,height:32,borderRadius:"50%",cursor:"pointer",fontSize:14,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
+          <button onClick={onClose} style={{background:"rgba(255,255,255,.15)",border:"none",color:"#fff",width:32,height:32,borderRadius:"50%",cursor:"pointer",fontSize:15,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
         </div>
       </div>
       <div style={{padding:isMobile?"1rem":"1.5rem",flex:1}}>
@@ -293,7 +293,7 @@ function StateSidebar({selectedState,onSelect,isMobile,stateRegions,allStates}){
                   onMouseLeave={e=>{if(!active)e.currentTarget.style.background="transparent";}}>
                   <span style={{fontSize:9,padding:"2px 5px",borderRadius:3,letterSpacing:"0.06em",fontWeight:700,minWidth:30,textAlign:"center",background:active?T.green:T.paper,color:active?"#fff":T.muted,fontFamily:"'Inter',sans-serif",transition:"all .13s"}}>{st.short}</span>
                   <span style={{flex:1}}>{st.name}</span>
-                  {active&&<span style={{fontSize:12,color:T.greenMid}}>›</span>}
+                  {active&&<span style={{fontSize:15,color:T.greenMid}}>›</span>}
                 </button>);
               })}
             </div>
@@ -330,7 +330,7 @@ function StateBanner({state,onClear,isMobile,stateRegions}){
           </div>
         ))}
       </div>
-      <button onClick={onClear} style={{position:"absolute",top:10,right:12,background:"rgba(255,255,255,.15)",border:"none",color:"rgba(255,255,255,.7)",width:28,height:28,borderRadius:"50%",cursor:"pointer",fontSize:13,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
+      <button onClick={onClear} style={{position:"absolute",top:10,right:12,background:"rgba(255,255,255,.15)",border:"none",color:"rgba(255,255,255,.7)",width:28,height:28,borderRadius:"50%",cursor:"pointer",fontSize:15,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
     </div>
   );
 }
@@ -414,10 +414,10 @@ export default function MalaysiaAIWorkIndex(){
 
       <header style={{position:"sticky",top:0,zIndex:150,background:"rgba(250,246,239,.94)",backdropFilter:"blur(12px)",WebkitBackdropFilter:"blur(12px)",borderBottom:`1px solid ${T.border}`,padding:isMobile?"0 0.8rem":"0 1.5rem",display:"flex",alignItems:"center",justifyContent:"space-between",height:isMobile?70:60,gap:10}}>
         <div style={{display:"flex",alignItems:"center",gap:10}}>
-          <div style={{width:30,height:30,borderRadius:"50%",background:T.green,display:"flex",alignItems:"center",justifyContent:"center"}}><span style={{color:T.amber,fontSize:13}}>☽</span></div>
+          <div style={{width:30,height:30,borderRadius:"50%",background:T.green,display:"flex",alignItems:"center",justifyContent:"center"}}><span style={{color:T.amber,fontSize:15}}>☽</span></div>
           <div>
             <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:16,fontWeight:700,color:T.green,lineHeight:1}}>MY AI Work Index</div>
-            <div style={{fontSize:9,color:T.muted,letterSpacing:"0.12em",textTransform:"uppercase"}}>Malaysia · Beta 2026</div>
+            <div style={{fontSize:15,color:T.muted,letterSpacing:"0.12em",textTransform:"uppercase"}}>Malaysia · Beta 2026</div>
           </div>
           {!isMobile&&<div style={{display:"flex",gap:4,marginLeft:12}}>
             {["Find","Browse","Compare","Methodology"].map(l=><span key={l} style={{fontSize:11,padding:"4px 8px",border:`1px solid ${T.border}`,borderRadius:12,color:T.muted,fontFamily:"'Inter',sans-serif"}}>{l}</span>)}
@@ -438,15 +438,15 @@ export default function MalaysiaAIWorkIndex(){
         <svg className="heroOrb" style={{position:"absolute",right:0,top:0,bottom:0,width:"38%",opacity:.05}} viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">{[180,150,120,90,60].map((r,i)=><circle key={i} cx="400" cy="150" r={r} fill="none" stroke="#fff" strokeWidth="40"/>)}</svg>
         <div style={{position:"absolute",bottom:0,left:0,right:0,height:5,background:`repeating-linear-gradient(90deg,${T.red} 0,${T.red} 48%,transparent 48%,transparent 52%,${T.amber} 52%,${T.amber} 100%)`}}/>
         <div style={{maxWidth:820,opacity:mounted?1:0,transform:mounted?"none":"translateY(18px)",transition:"all .55s ease"}}>
-          <p style={{fontSize:10,letterSpacing:"0.22em",color:"rgba(255,255,255,.5)",textTransform:"uppercase",marginBottom:14}}>DOSM MASCO 2020 · TalentCorp MyCOL 2024/25 · Structural AI Scores</p>
+          <p style={{fontSize:15,letterSpacing:"0.22em",color:"rgba(255,255,255,.5)",textTransform:"uppercase",marginBottom:14}}>DOSM MASCO 2020 · TalentCorp MyCOL 2024/25 · Structural AI Scores</p>
           <h1 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"clamp(2.2rem,5vw,4rem)",fontWeight:900,color:"#fff",lineHeight:1.05,letterSpacing:"-0.02em",marginBottom:"1rem"}}>How will AI reshape<br/><span style={{color:T.amber}}>work in Malaysia?</span></h1>
-          <p style={{fontSize:12,color:"rgba(255,255,255,.6)",maxWidth:460,lineHeight:1.75,marginBottom:"2rem"}}>Explore AI displacement pressure across 48 Malaysian occupations. Select any state on the left to see which roles face the most pressure in that economy.</p>
+          <p style={{fontSize:15,color:"rgba(255,255,255,.6)",maxWidth:460,lineHeight:1.75,marginBottom:"2rem"}}>Explore AI displacement pressure across 48 Malaysian occupations. Select any state on the left to see which roles face the most pressure in that economy.</p>
           <div style={{display:"flex",gap:0,flexWrap:"wrap",borderTop:"1px solid rgba(255,255,255,.14)",paddingTop:"1.4rem"}}>
             {[{val:"620K",label:"Jobs at high displacement risk",note:"TalentCorp 2024"},{val:"RM 4,300",label:"Median monthly salary at AI overlap",note:"DOSM LFS Q4 2024"},{val:"16",label:"States & territories covered",note:"All Malaysia"},{val:"15%",label:"High-risk automation by 2030",note:"World Bank"}].map((s,i)=>(
               <div key={s.val} className="heroCard statTile" style={{animationDelay:`${i*0.12}s`,paddingRight:isMobile?"0.5rem":"2rem",marginRight:isMobile?"0.5rem":"2rem",borderRight:!isMobile&&i<3?"1px solid rgba(255,255,255,.12)":"none",marginBottom:"0.75rem",width:isMobile?"50%":"auto"}}>
                 <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:28,fontWeight:700,color:"#fff",lineHeight:1}}>{s.val}</div>
-                <div style={{fontSize:10,color:"rgba(255,255,255,.5)",marginTop:4,maxWidth:130,lineHeight:1.5}}>{s.label}</div>
-                <div style={{fontSize:9,color:T.amber,marginTop:3,opacity:.7}}>{s.note}</div>
+                <div style={{fontSize:15,color:"rgba(255,255,255,.5)",marginTop:4,maxWidth:130,lineHeight:1.5}}>{s.label}</div>
+                <div style={{fontSize:15,color:T.amber,marginTop:3,opacity:.7}}>{s.note}</div>
               </div>
             ))}
           </div>
