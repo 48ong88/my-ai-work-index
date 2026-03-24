@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
+    "check:merge-conflicts": "if rg -n \"^(<<<<<<<|=======|>>>>>>>)\" src README.md index.html package.json public; then echo 'Merge conflict markers found'; exit 1; else echo 'No merge conflict markers found'; fi",
     "preview": "vite preview"
   },
   "dependencies": {
